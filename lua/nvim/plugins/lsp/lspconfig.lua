@@ -77,14 +77,36 @@ return {
 
     -- Change the Diagnostic symbols in the sign column (gutter)
     -- (not in youtube nvim video)
-    local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
-    for type, icon in pairs(signs) do
-      local hl = "DiagnosticSign" .. type
-      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-    end
+    -- local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
+    -- for type, icon in pairs(signs) do
+    --   local hl = "DiagnosticSign" .. type
+    --   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+    -- end
+    vim.diagnostic.config({
+       signs = {
+          text = {
+                  [vim.diagnostic.severity.ERROR] = " ",
+                  [vim.diagnostic.severity.WARN] = " ",
+                  [vim.diagnostic.severity.INFO] = "󰠠 ",
+                  [vim.diagnostic.severity.HINT] = " ",
+          },
+          texthl = {
+                    [vim.diagnostic.severity.ERROR] = "Error",
+                    [vim.diagnostic.severity.WARN] = "Warning",
+                    [vim.diagnostic.severity.INFO] = "Info",
+                    [vim.diagnostic.severity.HINT] = "Hint",
+          },
+          numhl = {
+                   [vim.diagnostic.severity.ERROR] = "",
+                   [vim.diagnostic.severity.WARN] = "",
+                   [vim.diagnostic.severity.INFO] = "",
+                   [vim.diagnostic.severity.HINT] = "",
+          },
+       },
+    })
 
     -- Forma de configurar los servidores de lenguaje.
-    lspconfig.clangd.setup({
+    vim.lsp.config.clangd = {
           -- Configura la forma en que se ejecuta clangd en neovim.
           -- background-index: genera un indice global en segundo plano para encontrar referencias mas rapido.
           --       Se almacena en ~/.cache/clangd/
@@ -95,13 +117,13 @@ return {
           -- root_pattern busca archivos/carpetas en la jerarquia de directorios.
           -- Lo que hace es buscar un fichero "compile_commands.json" en el directorio DONDE SE HA ABIERTO EL FICHERO, y si no lo encuentra va subiendo niveles y lo sigue buscando.
           -- Si no lo encuentra, entonces pasa a buscar, usando el mismo proceso, con .git (carpeta)
-          root_dir = lspconfig.util.root_pattern("compile_commands.json", ".git"),
+          root_dir = vim.fs.root(0, { "compile_commands.json", ".git" }),
           settings = { 
             -- Mostrar el estado de clangd en el cliente
             clangd = {clangdFileStatus = true,},
           },
           capabilities = capabilities,
-    })
+    }
     -- mason_lspconfig.setup_handlers({
     --   -- default handler for installed servers
     --   function(server_name)
@@ -132,6 +154,8 @@ return {
     --     })
     --   end,
     -- })
+    -- Activar el servidor
+    vim.lsp.enable("clangd")
   end,
 }
 

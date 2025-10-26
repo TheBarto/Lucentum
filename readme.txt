@@ -38,6 +38,9 @@ export PS1="\e[1;32m\u\e[0m@\e[1;31m\H\e[0m//\e[1;34m\w\e[0m\e[1;36m\$(parse_git
 With this configuration we will print: current user@device's name//current_work_directory. The command will we type at the next line.
 If the current working directory has a git repository, the repository name will be also displayed at the prompt line.
 
+These two webs explain everything needed to understand all the symbols:
+https://www.linkedin.com/pulse/transform-your-terminal-step-by-step-guide-show-git-branch-eking
+https://phoenixnap.com/kb/change-bash-prompt-linux
 
 * To add custom font elements to the system, this must be downloaded from the git repository: https://github.com/ryanoasis/nerd-fonts/releases. After select and download the desired zip font, we must install it. For that the compress file must be uncompress at the following location:
 	- ~/.local/share/fonts
@@ -49,5 +52,7 @@ With this now we can use the following fonts, but only at the user we set them. 
 To use it at Windows Subsystem for Linux (WSL), you must install the fonts at the Windows System. For that you must select all the .ttf files and click at install for all users/install them. After that, we have all the fonts install them in Windows. Now at the Window's Power Shell, click at the down arrow, and select 'Configure'.
 
 At the profile menu, select the 'Default Values' and 'Appearance'. Now at the font type sub-menu, select the desired font, save and restart the WSL terminal.
+
+This can be searched at Google, or just go to: https://dev.to/erickvasm/como-personalizar-neovim-3gg8. It explains these steps quite good.
 
 * To compare files meld program could be use. This program allows you to compare files and folders. To install it: $sudo apt-get install meld
