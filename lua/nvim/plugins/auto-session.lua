@@ -18,8 +18,8 @@ return {
         -- wr -> Working session Restore
         -- ws -> Working session Save
         -- This command for LOAD A SESSION
-        keymap.set("n", "<leader>wr", "<cmd>SessionRestore<CR>", { desc = "Resore session for cwd" })
+        keymap.set("n", "<leader>wr", "<cmd>AutoSession restore<CR>", { desc = "Resore session for cwd" })
         -- This command for SAVE A CURRENT SESSION
-        keymap.set("n", "<leader>ws", "<cmd>SessionSave<CR>",    { desc = "Save session for auto session root directory"})
+        keymap.set("n", "<leader>ws", "<cmd>AutoSession save<CR>",    { desc = "Save session for auto session root directory"})
     end,
 }
