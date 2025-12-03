@@ -18,6 +18,21 @@ return {
     -- import mason_lspconfig plugin
     -- local mason_lspconfig = require("mason-lspconfig")
 
+    vim.lsp.config("clangd", {
+      cmd = {
+        "clangd",
+        "--background-index",        -- indexa mientras editas (muy rápido)
+        "--completion-style=detailed",
+        "--clang-tidy",              -- análisis automático de errores
+        "--all-scopes-completion",
+        "--header-insertion=iwyu",
+        "--pch-storage=memory",
+        "--offset-encoding=utf-16",  -- necesario para Neovim 0.11
+        "--fallback-style=llvm",
+        "--log=error",
+      },
+    })
+
     -- import cmp-nvim-lsp plugin
     local cmp_nvim_lsp = require("cmp_nvim_lsp")
 

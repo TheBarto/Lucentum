@@ -1,14 +1,15 @@
-* Neovim include by default a LSP client, but you can include configuration plugin like "nvim-lspconfig". With this plugin we can configurate the behaviour of the LSP client plugin. The LSP client comes installed from the 0.5 Neovim's version. To install it we must use the Lazy plugin and use a lua plugin.
+* Neovim include by default a LSP client. To configurate it, the plugin like "nvim-lspconfig" is used. With this plugin we can configurate the behaviour of the LSP client plugin. The LSP client comes installed from the 0.5 Neovim's version. To install it we must use the Lazy plugin and use a lua plugin.
 
-* The LSP server for C is clangd. This allow to have the same functionallity as a programming IDE. To install it we have to install it using the apt-get tool: $sudo apt-get install clangd. Tras instalarlo comprobamos cual es la versión usando $clangd --version
+* The LSP server for C is clangd. This server do not come install at the system. You have to install it: $sudo apt-get install clangd. This allow to have the same functionallity as a programming IDE. After install it, you can check which version has been installed using the command: $clangd --version
 
-To know how to compile the code, the clangd server needs a special file in which all the project compilation information will be specified. This file will help the clangd to obtain all the information. To generate it there is 2 ways: 
+* To know how to compile the code, the clangd server needs a special file in which all the project compilation information will be specified. This file will help the clangd to obtain all the information. To generate it there is 2 ways: 
 
    - Using CMAKE -> "cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -B build". This will generate the file compile_commands.json. $sudo apt-get install cmake
    - Using bear  -> "bear -- make". This will generate the compile_commands.json. $sudo apt-get install bear
 
 Both ways generate the "compile_commands.json" file, which helps the clangd server, must be at the root of the project. It is important to situate the file at the root project folder, otherwise it won't work.
 
+* Install ripgrep 'sudo apt install ripgrep' if you want to use Telescope. Telescope uses an internal searcher, which is ripgrep by default.
 
 * To have a specific format, it is necessary install another plugin, one that uses a formatter to set the code with an specific/desired format. With this plugin we can set the format with a command, or at the moment of saving, allowing us to have a share global code format. This plugin is "conform.lua".
 The plugin uses a formatter to format the code. For C/C++ the formatter is "clang-format". To install this plugin it is mandatory use the command: $sudo apt-get install clang-format.
