@@ -35,5 +35,5 @@ keymap.set("n", "<leader>tp", "<cmd>tabp<CR>",     {desc = "Go to previous tab"}
 keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", {desc = "Open current buffer in new tab"}) -- Open the current file in another tab (same file in two tabs)
 
 -- recargar configuracion de Neovim sin estar cerrandolo con F5.
-keymap.set("n", "<F5>", ":source $MYVIMRC<CR>", {noremap = true, silent = true})
+-- keymap.set("n", "<F5>", ":source $MYVIMRC<CR>", {noremap = true, silent = true})
 
