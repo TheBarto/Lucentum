@@ -159,24 +159,23 @@ return {
 
 		hint = [[
 			NVIM Telescope
-			_f_: find files	_r_: open old files
-			_s_: find string in cwd	_g_: find string under cursor
-			_t_: find todos	_D_: find function definition under cursor
-			_R_: find all under cursor element references
-			_S_: find symbols in cwd
-			_I_: Show element implementations
+			_f_: find files
+			_r_: open old files
+			_s_: find string in cwd
+			_g_: find string under cursor
+			_t_: find todos
 			_T_: Smart type search
 			_<ESC>
 		]]
 
         local hydra = require("hydra")
-		hydra {
+		hydra({
 			name = "Telescope",
 			hint = hint,
 			mode = "n",
 			config = {
-				buffer = bufnr,
-				color = 'pink',
+				--buffer = vim.api.nvim_get_current_buf(),
+				--color = 'pink',
 				invoke_on_body = true,
 				hint = {
 					border = "rounded",
@@ -184,40 +183,45 @@ return {
 				},
 			},
 			body = "<leader>f",
+			-- IMPORTANTE: el hint y el heads deben tener el mismo numero de
+			-- elementos. En caso contrario, dará un error por no coincidir.
 			heads = {
-				{'f', telescope.find_files},
-				{'s', cmd 'grep_project_string'},
-				{'g', cmd 'grep_word_under_cursor'},
-				{'t', cmd 'TodoTelescope'},
-				{'D', cmd 'Telescope lsp_definitions'},
-				{'R', cmd 'Telescope lsp_references'},
-				{'S', cmd 'Telescope lsp_document_symbols'},
-				{'I', cmd 'Telescope lsp_implementations'},
-				{'T', 'smart_lsp_jump'},
-				{"<Esc>", nil, { exit = true } },
+				{ 'f', tel.find_files, { exit = true, desc = "Find files" } },
+				{ 'r', tel.oldfiles, { exit = true, desc = "Find old open files" } },
+				{ 's', grep_project_string, { exit = true, desc = "Grep find string" } },
+				{ 'g', grep_word_under_cursor, { exit = true, desc = "Grep find word under cursor" } },
+				{ 't', tel.TodoTelescope, { exit = true, desc = "Find 'TODOS' words" } },
+				--{ 'D', tel.lsp_definitions, { exit = true, desc = "Find 'TODOS' words" } },
+				--{ 'R', tel.lsp_references },
+				--{ 'S', tel.lsp_document_symbols },
+				--{ 'I', tel.lsp_implementations },
+				{ 'T', smart_lsp_jump, { exit = true, desc = "Smart definition search" } },
+				{ "<Esc>", nil, { exit = true, desc = "Smart definition search" } },
 			}
-		}
+		})
 
         --set custom keymaps
-        local keymap = vim.keymap --load the current keymap set
+        --local keymap = vim.keymap --load the current keymap set
 
         -- "n" is for normal mode
-        keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>",  { desc = "Fuzzy find files in cwd" })
-        keymap.set("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>",    { desc = "Fuzzy find recent files" })
-        keymap.set("n", "<leader>fs", grep_project_string,            { desc = "Find string in cwd" })
-        keymap.set("n", "<leader>fg", grep_word_under_cursor,         { desc = "Find string under cursor in current proyect or cwd if no proyect" })
-        --keymap.set("n", "<leader>fs", "<cmd>Telescope live_grep<cr>",   { desc = "Find string in cwd" })
+        --keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>",  { desc = "Fuzzy find files in cwd" })
+        --keymap.set("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>",    { desc = "Fuzzy find recent files" })
+        --keymap.set("n", "<leader>fs", grep_project_string,            { desc = "Find string in cwd" })
+        --keymap.set("n", "<leader>fg", grep_word_under_cursor,         { desc = "Find string under cursor in current proyect or cwd if no proyect" })
+        -- Estos 2 comandos ahora no se emplean. Se han dejado descontinuados
+		--keymap.set("n", "<leader>fs", "<cmd>Telescope live_grep<cr>",   { desc = "Find string in cwd" })
         --keymap.set("n", "<leader>fg", "<cmd>Telescope grep_string<cr>", { desc = "Find string under cursor in cwd" })
-        keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>",         { desc = "Find todos" })
+        --keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>",         { desc = "Find todos" })
 
 
         -- This are for searching definitions, references, symbols inside the proyect.
-        keymap.set("n", "<leader>fD", "<cmd>Telescope lsp_definitions<cr>",      { desc = "Find the definition of the function under the cursor" })
-        keymap.set("n", "<leader>fR", "<cmd>Telescope lsp_references<cr>",       { desc = "Find all the references of the element under the cursor" })
-        keymap.set("n", "<leader>fS", "<cmd>Telescope lsp_document_symbols<cr>", { desc = "Find symbols in cwd" })
-        keymap.set("n", "<leader>fI", "<cmd>Telescope lsp_implementations<cr>",  { desc = "Show elements(functions) implementations"})
+        --keymap.set("n", "<leader>fD", "<cmd>Telescope lsp_definitions<cr>",      { desc = "Find the definition of the function under the cursor" })
+        --keymap.set("n", "<leader>fR", "<cmd>Telescope lsp_references<cr>",       { desc = "Find all the references of the element under the cursor" })
+        --keymap.set("n", "<leader>fS", "<cmd>Telescope lsp_document_symbols<cr>", { desc = "Find symbols in cwd" })
+        --keymap.set("n", "<leader>fI", "<cmd>Telescope lsp_implementations<cr>",  { desc = "Show elements(functions) implementations"})
+        -- Estos 2 comandos ahora no se emplean. Se han dejado descontinuados
         --keymap.set("n", "<leader>fT", "<cmd>Telescope lsp_type_definitions<cr>", { desc = "Find the TYPE DEFINITION of a structure/array/..."})
         -- keymap.set("n", "<leader>fT", clangd_smart_type, {desc = "Smart type search"})
-        keymap.set("n", "<leader>fT", smart_lsp_jump, {desc = "Smart type search"})
+        --keymap.set("n", "<leader>fT", smart_lsp_jump, {desc = "Smart type search"})
     end,
 }
