@@ -2,25 +2,16 @@ return {
 	"mfussenegger/nvim-dap",
 	dependencies = {
 		"rcarriga/nvim-dap-ui",
-		"nvim-neotest/nvim-nio"
+		"nvim-neotest/nvim-nio",
+		"theHamsta/nvim-dap-virtual-text",
+		"nvim-telescope/telescope.nvim",
+		"nvim-telescope/telescope-dap.nvim",
 	},
 	config = function()
-		--[[local cpptools_path = vim.fn.expand("~/.local/share/cpptools")
-		local opendebug = cpptools_path .. "/debugAdapters/bin/OpenDebugAD7"
-
-		if vim.fin.executable(opendebug) == 0 then
-			vim.notify("Installing OpenDebugAD7...", vim.log.levels.INFO)
-			vim.fn.system({
-				"git", "clone",
-				"https://github.com/microsoft/vscode-cpptools",
-				cpptools_path,
-			})
-		end]]
-
 		local dap = require("dap")
 		local dapui = require("dapui")
 
-		local function has_gdb_dap()
+		local function get_gdb_version()
 			local handle = io.popen("gdb --version 2>/dev/null")
 			if not handle then
 				return false
@@ -36,18 +27,32 @@ return {
 		end
 
 		local function pick_adapter()
-			if has_gdb_dap() then
+			if get_gdb_version() then
 				return "gdb"
 			end
 			return "cppdbg"
 		end
 
+		--[[Para que GDB funcione con DAP es necesario que su version sea >= GDB 14.
+			En otro caso fallará.]]
 		dap.adapters.gdb = {
 			type = "executable",
 			command = "gdb",
 			args = { "--interpreter=dap", "--eval-command", "set print pretty on" }
 		}
 
+		--[[Adaptador para cppdbg. En caso de que falle GDB, podemos emplear esta version,
+			que emplea un adaptador generado por Windows para comunicarse con el debugger
+			en caso de que este no disponga de adaptador DAP.
+
+			Para instalarlo hay que ir al github de microsoft (https://github.com/microsoft/vscode-cpptools),
+			y seleccionar en las releases -> "Latest". Una vez aqui, hay que buscar cpptools-linux-x64.vsix
+			(o la arquitectura que tengamos en el sistema).
+
+			Una vez descargado, simplemente pasamos el formato a zip, y lo descomprimimos.
+			De todos los archivos que vienen, tenemos que buscar OpenDebugAD7, copiarlo en
+			el directorio indicado abajo y darle permisos de ejecución para el usuario,
+			y con eso ya tendríamos todo fijado.]]
 		dap.adapters.cppdbg = {
 			id = "cppdbg",
 			type = "executable",
@@ -80,7 +85,7 @@ return {
 					local name = vim.fn.input('Executable name (filter): ')
 					return require("dap.utils").pick_process({ filter = name })
 				end,
-				cwd = '${workspaceFolder}'
+				cwd = '${workspaceFolder}',
 				stopAtBeginningOfMainSubprogram = true,
 				stopAtEntry = true,
 
@@ -94,7 +99,7 @@ return {
 				program = function()
 					return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
 				end,
-				cwd = '${workspaceFolder}'
+				cwd = '${workspaceFolder}',
 				stopAtBeginningOfMainSubprogram = true,
 				stopAtEntry = true,
 
@@ -120,10 +125,76 @@ return {
 			dapui.close()
 		end
 
+		local dapuitext = require("nvim-dap-virtual-text")
+		dapuitext.setup({
+			enabled = true,
+			enabled_commands = true,
+			highlight_changed_variables = true,
+			highlight_new_as_changed = true,  -- highlight new variables in the same way as changed variables (if highlight_changed_variables)
+			commented = false, -- prefix virtual text with comment string
+			show_stop_reason = true, -- show stop reason when stopped for exceptions
+
+			display_callback = function(variable, buf, stackframe, node, options)
+			--by default, strip out new line characters
+				if options.virt_text_pos == 'inline' then
+					return ' = ' .. variable.value:gsub("%s+", " ")
+				else
+					return variable.name .. ' = ' .. variable.value:gsub("%s+", " ")
+				end
+			end,
+
+			virt_text_pos = get_gdb_version() and 'eol' or 'inline',
+		})
+
+		vim.fn.sign_define("DapStopped", {
+		--	text = "",
+			texthl = "DapStopped",
+			linehl = "DapStoppedLine",
+			numhl =  "DapStoppedLine",
+		})
+
+		-- Para que la linea en donde estemos parados resalte mas
+		vim.api.nvim_create_autocmd("ColorScheme", {
+			callback = function()
+				vim.api.nvim_set_hl(0, "DapStoppedLine", { bg = "#E31414" })
+				vim.api.nvim_set_hl(0, "DapStopped", { bg = "#E31414" })
+			end,
+		})
+
+		local telescope = require("telescope")
+		telescope.load_extension("dap")
+
+		-- Telescope DAP keymaps
+		-- Listamos todos los breakpoints.
+		vim.keymap.set("n", "<leader>db",
+			function() telescope.extensions.dap.list_breakpoints() end,
+			{ desc = "DAP: Listar breakpoints" }
+		)
+
+		-- Muestra el stack de llamadas (backtrace) del
+		-- programa cuando este se encuentra detenido.
+		vim.keymap.set("n", "<leader>df",
+			function() telescope.extensions.dap.frames() end,
+			{ desc = "DAP: Stack frames" }
+		)
+
+		-- Abre una lista para visualizar todas las
+		-- variables visibles en el scope actual
+		vim.keymap.set("n", "<leader>dv",
+			function() telescope.extensions.dap.variables() end,
+			{ desc = "DAP: Variables" }
+		)
+
+		-- Lista todos los comandos DAP disponibles en el momento de ejecutarlo
+		vim.keymap.set("n", "<leader>dc",
+			function() telescope.extensions.dap.commands() end,
+			{ desc = "DAP: Comandos" }
+		)
+
 		vim.keymap.set("n", "<F5>",  function() dap.continue() end, { desc = "Iniciar/Continuar depuracion" })
-		vim.keymap.set("n", "<F10>", function() dap.step_over() end, { desc = "Step Over" })
-		vim.keymap.set("n", "<F11>", function() dap.setp_into() end, { desc = "Step Into" })
-		vim.keymap.set("n", "<F12>", function() dap.step_out() end, { desc = "Step Out" })
+		vim.keymap.set("n", "<F6>", function() dap.step_over() end, { desc = "Step Over" })
+		vim.keymap.set("n", "<F7>", function() dap.step_into() end, { desc = "Step Into" })
+		vim.keymap.set("n", "<F8>", function() dap.step_out() end, { desc = "Step Out" })
 		vim.keymap.set("n", "<Leader>b", function() dap.toggle_breakpoint() end, { desc = "Toggle Breakpoint" })
 
 		-- Asegurar estos comandos antes de descomentarlos

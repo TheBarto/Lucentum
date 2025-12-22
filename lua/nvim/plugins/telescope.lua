@@ -8,6 +8,7 @@ return {
         "nvim-lua/plenary.nvim",
         {"nvim-telescope/telescope-fzf-native.nvim", build="make"},
         "nvim-tree/nvim-web-devicons",
+        "anuvyklack/hydra.nvim",
     },
 
     --This function will run when telescope runs
@@ -155,6 +156,47 @@ return {
 
         -- Load the fzf extension to have better performance
         telescope.load_extension("fzf")
+
+		hint = [[
+			NVIM Telescope
+			_f_: find files	_r_: open old files
+			_s_: find string in cwd	_g_: find string under cursor
+			_t_: find todos	_D_: find function definition under cursor
+			_R_: find all under cursor element references
+			_S_: find symbols in cwd
+			_I_: Show element implementations
+			_T_: Smart type search
+			_<ESC>
+		]]
+
+        local hydra = require("hydra")
+		hydra {
+			name = "Telescope",
+			hint = hint,
+			mode = "n",
+			config = {
+				buffer = bufnr,
+				color = 'pink',
+				invoke_on_body = true,
+				hint = {
+					border = "rounded",
+					position = "bottom",
+				},
+			},
+			body = "<leader>f",
+			heads = {
+				{'f', telescope.find_files},
+				{'s', cmd 'grep_project_string'},
+				{'g', cmd 'grep_word_under_cursor'},
+				{'t', cmd 'TodoTelescope'},
+				{'D', cmd 'Telescope lsp_definitions'},
+				{'R', cmd 'Telescope lsp_references'},
+				{'S', cmd 'Telescope lsp_document_symbols'},
+				{'I', cmd 'Telescope lsp_implementations'},
+				{'T', 'smart_lsp_jump'},
+				{"<Esc>", nil, { exit = true } },
+			}
+		}
 
         --set custom keymaps
         local keymap = vim.keymap --load the current keymap set
