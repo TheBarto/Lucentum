@@ -1,6 +1,7 @@
 -- Shows and interacts with Git information directly from Neovim
 return {
   "lewis6991/gitsigns.nvim",
+  dependencies = { "nvimtools/hydra.nvim", },
   event = { "BufReadPre", "BufNewFile" },
   opts = {
     -- Cargar las opciones para configurar el plugin como queramos
@@ -23,8 +24,48 @@ return {
 
     on_attach = function(bufnr)
       local gs = package.loaded.gitsigns
+      local hydra = require("hydra")
 
-      local function map(mode, l, r, desc)
+      gitsigns_hints = [[
+		NVIM GITSIGNS
+		_a_: do stage hunk (git add)
+		_u_: undo stage hunk (undo git add, mantain the changes)
+		_r_: reset stage (undo the changes that create the hunk)
+		_b_: blame line
+		_n_: next hunk
+		_p_: previous hunk
+		_A_: do stage for all hunks (git add for ALL hunks)
+		_R_: reset for all hunks (undo the changes for ALL hunks)
+		_P_: compare the hunk's changes with the original element
+		_<Esc>: quit
+	  ]]
+
+	hydra({
+		name = "Git Signs",
+		hint = gitsigns_hints,
+		mode = "n",
+		body = "<leader>g",
+		config = {
+			invoke_on_body = true,
+			hint = {
+				type = "window",
+				position = "bottom",
+			},
+		},
+		heads = {
+			{ 'a', gs.stage_hunk, { desc = "do stage hunk" } },
+			{ 'u', gs.undo_stage_hunk, { desc = "undo stage hunk" } },
+			{ 'r', gs.reset_hunk, { desc = "reset hunk " } },
+			{ 'b', gs.toggle_current_line_blame, { desc = "blame lines"} },
+			{ 'n', gs.next_hunk, { desc = "next hunk" } },
+			{ 'p', gs.prev_hunk, { desc = "previous hunk" } },
+			{ 'A', gs.stage_buffer, { desc = "stage ALL hunks " } },
+			{ 'R', gs.reset_buffer, { desc = "reset ALL hunks " } },
+			{ 'P', gs.preview_hunk, { desc = "preview hunk" } },
+			{ "<Esc>", nil, { exit = true, desc = "Exit" } },
+		}
+	})
+      --[[local function map(mode, l, r, desc)
         vim.keymap.set(mode, l, r, { buffer = bufnr, desc = desc })
       end
 
@@ -77,7 +118,7 @@ return {
       -- end, "Diff this ~")
 
       -- Text object
-      map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "Gitsigns select hunk")
+      map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "Gitsigns select hunk")]]
     end,
   },
 }

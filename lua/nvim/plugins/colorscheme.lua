@@ -46,6 +46,20 @@ return {
           colors.fg_gutter = fg_gutter
           colors.fg_sidebar = fg_dark
         end, ]]
+
+        on_highlights = function(hl, colors)
+          --hl.HydraHint   = { fg = colors.magenta, link = nil }
+          --hl.HydraName   = { fg = colors.magenta, bold = true }
+          --hl.HydraHead   = { fg = colors.magenta, bg = colors.magenta, bold = true, link = nil, }
+          --hl.HydraDesc   = { fg = colors.magenta, link = nil }
+          --hl.HydraBorder = { fg = colors.magenta, link = nil }
+          --hl.HydraTitle  = { fg = colors.magenta, bold = true, link = nil, }
+          --[[HydraBlue, HydraPink, ... hacen referencia a los parametros color=blue, pink, etc.
+          HydraBlue configura los heads asignados a la opcion color = blue. Recordar que
+          la opcion color no indica los colores, sino que son "atajos" para configurar
+          opciones 'exit' o 'foreign keys']]
+          --hl.HydraBlue   = { fg = "#ff55de", bold = true, link = nil, }
+        end,
       })
 
     --Load the colorscheme

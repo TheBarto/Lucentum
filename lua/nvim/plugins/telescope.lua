@@ -8,7 +8,7 @@ return {
         "nvim-lua/plenary.nvim",
         {"nvim-telescope/telescope-fzf-native.nvim", build="make"},
         "nvim-tree/nvim-web-devicons",
-        "anuvyklack/hydra.nvim",
+        "nvimtools/hydra.nvim",
     },
 
     --This function will run when telescope runs
@@ -157,32 +157,27 @@ return {
         -- Load the fzf extension to have better performance
         telescope.load_extension("fzf")
 
-		hint = [[
+        local hydra     = require("hydra")
+		telescope_hint = [[
 			NVIM Telescope
-			_f_: find files
-			_r_: open old files
-			_s_: find string in cwd
-			_g_: find string under cursor
-			_t_: find todos
-			_T_: Smart type search
-			_<ESC>
+			_f_: find files                 _r_: open old files
+			_s_: find string in cwd         _g_: find string under cursor
+			_t_: find todos                 _T_: Smart type search
+			_<Esc>_: Exit
 		]]
 
-        local hydra = require("hydra")
 		hydra({
 			name = "Telescope",
-			hint = hint,
+			hint = telescope_hint,
 			mode = "n",
+			body = "<leader>f",
 			config = {
-				--buffer = vim.api.nvim_get_current_buf(),
-				--color = 'pink',
+				--color = "pink",
 				invoke_on_body = true,
 				hint = {
-					border = "rounded",
-					position = "bottom",
+					--position = "bottom",
 				},
 			},
-			body = "<leader>f",
 			-- IMPORTANTE: el hint y el heads deben tener el mismo numero de
 			-- elementos. En caso contrario, dará un error por no coincidir.
 			heads = {
@@ -190,16 +185,11 @@ return {
 				{ 'r', tel.oldfiles, { exit = true, desc = "Find old open files" } },
 				{ 's', grep_project_string, { exit = true, desc = "Grep find string" } },
 				{ 'g', grep_word_under_cursor, { exit = true, desc = "Grep find word under cursor" } },
-				{ 't', tel.TodoTelescope, { exit = true, desc = "Find 'TODOS' words" } },
-				--{ 'D', tel.lsp_definitions, { exit = true, desc = "Find 'TODOS' words" } },
-				--{ 'R', tel.lsp_references },
-				--{ 'S', tel.lsp_document_symbols },
-				--{ 'I', tel.lsp_implementations },
+				{ 't', function() vim.cmd("TodoTelescope") end, { exit = true, desc = "Find 'TODOS' words" } },
 				{ 'T', smart_lsp_jump, { exit = true, desc = "Smart definition search" } },
-				{ "<Esc>", nil, { exit = true, desc = "Smart definition search" } },
+				{ "<Esc>", nil, { exit = true, desc= "Salir" } },
 			}
 		})
-
         --set custom keymaps
         --local keymap = vim.keymap --load the current keymap set
 
