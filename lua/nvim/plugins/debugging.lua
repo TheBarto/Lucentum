@@ -164,38 +164,72 @@ return {
 		local telescope = require("telescope")
 		telescope.load_extension("dap")
 
+        local hydra = require("hydra")
+		DAP_hint = [[
+		_b_: Toggle breakpoint
+		_l_: List breakpoints
+		_f_: Show call stack
+		_v_: Show all visible variables
+		_c_: Show all available commands
+		<F5>: Start/Continue depuration
+		<F6>: Step Over
+		<F7>: Step Into
+		<F8>: Step Out
+		]]
+
+		hydra({
+			name = "DAP",
+			hint = DAP_hint,
+			mode = "n",
+			body = "<leader>d",
+			config = {
+				invoke_on_body = true,
+			},
+			heads = {
+				{ 'b', function() telescope.extensions.dap.toogle_breakpoints() end, { desc = "DAP: Toggle breakpoint" } },
+				{ 'l', function() telescope.extensions.dap.list_breakpoints() end, { desc = "DAP: Listar breakpoints" } },
+				{ 'f', function() telescope.extensions.dap.frames() end, { desc = "DAP: Listar stack llamadas" } },
+				{ 'v', function() telescope.extensions.dap.variables() end, { desc = "DAP: Variables" } },
+				{ 'c', function() telescope.extensions.dap.commands() end, { desc = "DAP: List available commands" } },
+				{ '<F5>', function() dap.continue() end, { desc = "Start/Continue execution" } },
+				{ '<F6>', function() dap.step_over() end, { desc = "Step Over" } },
+				{ '<F7>', function() dap.step_into() end, { desc = "Step Into" } },
+				{ '<F8>', function() dap.step_out() end, { desc = "Step Out" } },
+			}
+		})
+
 		-- Telescope DAP keymaps
 		-- Listamos todos los breakpoints.
-		vim.keymap.set("n", "<leader>db",
+		--[[vim.keymap.set("n", "<leader>db",
 			function() telescope.extensions.dap.list_breakpoints() end,
 			{ desc = "DAP: Listar breakpoints" }
-		)
+		)]]
 
 		-- Muestra el stack de llamadas (backtrace) del
 		-- programa cuando este se encuentra detenido.
-		vim.keymap.set("n", "<leader>df",
+		--[[vim.keymap.set("n", "<leader>df",
 			function() telescope.extensions.dap.frames() end,
-			{ desc = "DAP: Stack frames" }
-		)
+		{ desc = "DAP: Stack frames" }
+		)]]
 
 		-- Abre una lista para visualizar todas las
 		-- variables visibles en el scope actual
-		vim.keymap.set("n", "<leader>dv",
+		--[[vim.keymap.set("n", "<leader>dv",
 			function() telescope.extensions.dap.variables() end,
 			{ desc = "DAP: Variables" }
-		)
+		)]]
 
 		-- Lista todos los comandos DAP disponibles en el momento de ejecutarlo
-		vim.keymap.set("n", "<leader>dc",
+		--[[vim.keymap.set("n", "<leader>dc",
 			function() telescope.extensions.dap.commands() end,
 			{ desc = "DAP: Comandos" }
-		)
+		)]]
 
-		vim.keymap.set("n", "<F5>",  function() dap.continue() end, { desc = "Iniciar/Continuar depuracion" })
-		vim.keymap.set("n", "<F6>", function() dap.step_over() end, { desc = "Step Over" })
-		vim.keymap.set("n", "<F7>", function() dap.step_into() end, { desc = "Step Into" })
-		vim.keymap.set("n", "<F8>", function() dap.step_out() end, { desc = "Step Out" })
-		vim.keymap.set("n", "<Leader>b", function() dap.toggle_breakpoint() end, { desc = "Toggle Breakpoint" })
+		--vim.keymap.set("n", "<F5>",  function() dap.continue() end, { desc = "Iniciar/Continuar depuracion" })
+		--vim.keymap.set("n", "<F6>", function() dap.step_over() end, { desc = "Step Over" })
+		--vim.keymap.set("n", "<F7>", function() dap.step_into() end, { desc = "Step Into" })
+		--vim.keymap.set("n", "<F8>", function() dap.step_out() end, { desc = "Step Out" })
+		--vim.keymap.set("n", "<Leader>b", function() dap.toggle_breakpoint() end, { desc = "Toggle Breakpoint" })
 
 		-- Asegurar estos comandos antes de descomentarlos
 		--[[vim.keymap.set("n", "<Leader>B", function()

@@ -40,6 +40,13 @@ return {
 		_<Esc>: quit
 	  ]]
 
+	local function with_redraw(fn)
+		return function()
+			fn()
+			vim.cmd("redraw")
+		end
+	end
+
 	hydra({
 		name = "Git Signs",
 		hint = gitsigns_hints,
@@ -47,13 +54,17 @@ return {
 		body = "<leader>g",
 		config = {
 			invoke_on_body = true,
+			--[[Poner color = "pink" es como poner la opcion 'foreign_keys = run'.
+			    Con esta opción hydra se mantiene activo y ejecuta la accion asociada
+			    a la tecla pulsada. Esto también actualiza el entorno. ]]
+			color = "pink",
 			hint = {
 				type = "window",
 				position = "bottom",
 			},
 		},
 		heads = {
-			{ 'a', gs.stage_hunk, { desc = "do stage hunk" } },
+			{ 'a', function() gs.stage_hunk(); vim.cmd("redraw") end, { desc = "do stage hunk" } },
 			{ 'u', gs.undo_stage_hunk, { desc = "undo stage hunk" } },
 			{ 'r', gs.reset_hunk, { desc = "reset hunk " } },
 			{ 'b', gs.toggle_current_line_blame, { desc = "blame lines"} },

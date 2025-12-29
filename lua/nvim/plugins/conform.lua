@@ -27,7 +27,7 @@ return {
     })
 
     -- Formateo empleando el lsp client con comando.
-    vim.keymap.set({ "n", "v" }, "<leader>mp", function()
+    vim.keymap.set({ "n", "v" }, "<leader>m", function()
       conform.format({
         lsp_fallback = true,
         -- Realiza el formateo de manera asincrona, sin bloquear la interfaz de usuario

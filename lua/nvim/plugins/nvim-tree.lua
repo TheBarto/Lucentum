@@ -3,7 +3,11 @@
 return {
     "nvim-tree/nvim-tree.lua",
     -- This dependencies option is to fulfill a dependency of the plugin (which is in another git repository)
-    dependencies = "nvim-tree/nvim-web-devicons",
+    dependencies = {
+        "nvim-tree/nvim-web-devicons",
+        "nvimtools/hydra.nvim",
+    },
+
     -- This function always run on the plugin load.
     config = function()
         local nvimtree = require("nvim-tree")
@@ -41,12 +45,37 @@ return {
         })
 
         --set custom keymaps
-        local keymap = vim.keymap -- load current key maps to be sure
+        local hydra     = require("hydra")
+        nvim_tree_hint = [[
+		NVIM TREE
+		_e_: Toggle file explorer
+		_f_: Toggle file explorer on current file location
+		_c_: Collapse file explorer
+		_r_: Refresh file explorer
+		]]
+
+		hydra({
+			name = "nvim-tree",
+			hint = nvim_tree_hint,
+			mode = "n",
+			body = "<leader>e",
+			config = {
+				invoke_on_body = true,
+			},
+			heads = {
+				{ 'e', function() vim.api.nvim_command("NvimTreeToggle") end, { desc = "Toggle file explorer" } },
+				{ 'f', function() vim.api.nvim_command("NvimTreeFindFileToggle") end, { desc = "Toggle file explorer on current file location" } },
+				{ 'c', function() vim.api.nvim_command("NvimTreeToggle") end, { desc = "Collapse file explorer" } },
+				{ 'r', function() vim.api.nvim_command("NvimTreeToggle") end, { desc = "Refresh file explorer" } },
+			}
+		})
+
+        --[[local keymap = vim.keymap -- load current key maps to be sure
 
         keymap.set("n", "<leader>ee", "<cmd>NvimTreeToggle<CR>",         { desc = "Toggle file explorer" })                          -- toggle file explorer
         keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFileToggle<CR>", { desc = "Toggle file explorer on current file location" }) -- toggle file explorer on current file location
         keymap.set("n", "<leader>ec", "<cmd>NvimTreeCollapse<CR>",       { desc = "Collapse file explorer" })                        -- collapse file explorer
-        keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>",        { desc = "Refresh file explorer" })                         -- refresh file explorer
+        keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>",        { desc = "Refresh file explorer" })                         -- refresh file explorer]]
         -- <cmd> is the equivalent of ':' in normal mode to do a command
     end
 }

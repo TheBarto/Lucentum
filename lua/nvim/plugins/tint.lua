@@ -61,34 +61,37 @@ return {
 
     ---------------------------------------------------------------------------
     --  Keymaps para cambiar intensidad en caliente (muy útil en la práctica)
+    -- NO QUIERO CAMBIAR LA INTENSIDAD. CON LOS VALORES FIJADOS ANTERIORMENTE
+    -- ME PARECE MAS QUE SUFICIENTE. DEJO COMENTADO POR SI EN EL FUTURO QUIERO
+    -- USAR ESTOS COMANDOS.
     ---------------------------------------------------------------------------
     -- Oscurecer más
-    vim.keymap.set("n", "<leader>tm", function()
+    --[[vim.keymap.set("n", "<leader>tm", function()
       tint_value = tint_value - 10
       apply_tint()
       print("Tint más oscuro: " .. tint_value)
-    end, { desc = "Oscurecer ventanas inactivas" })
+    end, { desc = "Oscurecer ventanas inactivas" })]]
 
     -- Aclarar
-    vim.keymap.set("n", "<leader>tl", function()
+    --[[vim.keymap.set("n", "<leader>tl", function()
       tint_value = tint_value + 10
       apply_tint()
       print("Tint más claro: " .. tint_value)
-    end, { desc = "Aclarar ventanas inactivas" })
+    end, { desc = "Aclarar ventanas inactivas" })]]
 
     -- Modo extra oscuro (toggle)
-    local dark_mode = false
+    --[[local dark_mode = false
     vim.keymap.set("n", "<leader>td", function()
       dark_mode = not dark_mode
       tint_value = dark_mode and -120 or -60
       apply_tint()
       print("Modo oscuro fuerte: " .. tostring(dark_mode))
-    end, { desc = "Toggle modo oscuro fuerte" })
+    end, { desc = "Toggle modo oscuro fuerte" })]]
 
     -- Toggle general del plugin
-    vim.keymap.set("n", "<leader>tt", function()
+    --[[vim.keymap.set("n", "<leader>tt", function()
       require("tint").toggle()
       print("Tint toggled")
-    end, { desc = "Activar/desactivar Tint" })
+    end, { desc = "Activar/desactivar Tint" })]]
   end,
 }
