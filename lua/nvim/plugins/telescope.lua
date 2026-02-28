@@ -15,6 +15,50 @@ return {
     config = function()
         local telescope = require("telescope")
         local actions   = require("telescope.actions")
+        local action_state  = require("telescope.actions.state")
+
+--[[ COPIA TODOS LOS ELEMENTOS OBTENIDOS EN LA RESPUESTA, Y LOS METE EN EL QUICKFIX.
+--AL COPIARLOS ANTES DE CERRAR NINGÚN PICKER, NI NUNGÚN ELEMENTO, NO DA PROBLEMAS,
+--Y LUEGO ABRIMOS EL FICHERO SELECCIONADO.
+--]]
+local function open_and_send_to_qf(prompt_bufnr)
+  local picker = action_state.get_current_picker(prompt_bufnr)
+  local selection = action_state.get_selected_entry()
+
+  if not picker or not selection then
+    return
+  end
+
+  -- Construir quickfix manualmente con entradas actuales
+  local qf_items = {}
+
+  for entry in picker.manager:iter() do
+    table.insert(qf_items, {
+      filename = entry.path or entry.filename,
+      lnum = entry.lnum or 1,
+      col = entry.col or 1,
+      text = entry.text or entry.value,
+    })
+  end
+
+  vim.fn.setqflist({}, "r", {
+    title = picker.prompt_title or "Telescope",
+    items = qf_items,
+  })
+
+  -- Cerrar Telescope manualmente
+  actions.close(prompt_bufnr)
+
+  -- Abrir archivo / ubicación manualmente
+  if selection.path or selection.filename then
+    vim.cmd("edit " .. (selection.path or selection.filename))
+    if selection.lnum then
+      vim.api.nvim_win_set_cursor(0, { selection.lnum, (selection.col or 1) - 1 })
+    end
+  elseif selection.value then
+    vim.cmd("edit " .. selection.value)
+  end
+end
 
         telescope.setup({
           defaults = {
@@ -23,11 +67,25 @@ return {
               i = {
                 ["<C-k>"] = actions.move_selection_previous, -- move to prev result
                 ["<C-j>"] = actions.move_selection_next, -- move to next result
-                ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+                ["<C-q>"] = actions.send_selected_to_qflist,
+                ["<CR>"]  = open_and_send_to_qf,
+              },
+              n = {
+                ["<CR>"]  = open_and_send_to_qf,
               },
             },
           },
         })
+
+		local function toggle_quickfix()
+			for _, win in ipairs(vim.fn.getwininfo()) do
+				if win.quickfix == 1 then
+					vim.cmd("cclose")
+					return
+				end
+			end
+			vim.cmd("copen")
+		end
 
 -------------------------------------------------------------------------------------
         local tel = require("telescope.builtin")
@@ -150,6 +208,41 @@ return {
 
                 return args
                 end,
+
+  --             attach_mappings = function(prompt_bufnr, map)
+  --               local actions = require("telescope.actions")
+  -- vim.schedule(function()
+  --   local picker = action_state.get_current_picker(prompt_bufnr)
+  --   if not picker then return end
+  --
+  --   local entries = picker:get_all_entries()
+  --   if not entries then return end
+  --
+  --   local qf_items = {}
+  --
+  --   for _, entry in ipairs(entries) do
+  --     if entry.path then
+  --       table.insert(qf_items, {
+  --         filename = entry.path,
+  --         lnum = entry.lnum or 1,
+  --         col = entry.col or 1,
+  --         text = entry.text or "",
+  --       })
+  --     end
+  --   end
+  --
+  --   vim.fn.setqflist({}, "r", {
+  --     title = "Live Grep",
+  --     items = qf_items,
+  --   })
+  --
+  --   vim.cmd("copen")
+  --   vim.cmd("stopinsert")
+  --   vim.cmd("close")
+  -- end)
+  --
+  --               return true
+  --             end,
               })
           end)
         end
@@ -163,6 +256,7 @@ return {
 			_f_: find files                 _r_: open old files
 			_s_: find string in cwd         _g_: find string under cursor
 			_t_: find todos                 _T_: Smart type search
+			_o_: open/close split with last search results
 			_<Esc>_: Exit
 		]]
 
@@ -187,6 +281,7 @@ return {
 				{ 'g', grep_word_under_cursor, { exit = true, desc = "Grep find word under cursor" } },
 				{ 't', function() vim.cmd("TodoTelescope") end, { exit = true, desc = "Find 'TODOS' words" } },
 				{ 'T', smart_lsp_jump, { exit = true, desc = "Smart definition search" } },
+				{ 'o', toggle_quickfix, { exit = true, desc = "Show last search results "} },
 				{ "<Esc>", nil, { exit = true, desc= "Salir" } },
 			}
 		})

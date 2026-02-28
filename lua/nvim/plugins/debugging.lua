@@ -164,7 +164,7 @@ return {
 		local telescope = require("telescope")
 		telescope.load_extension("dap")
 
-        local hydra = require("hydra")
+		local hydra = require("hydra")
 		DAP_hint = [[
 		_b_: Toggle breakpoint
 		_l_: List breakpoints

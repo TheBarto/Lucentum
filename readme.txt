@@ -57,3 +57,9 @@ At the profile menu, select the 'Default Values' and 'Appearance'. Now at the fo
 This can be searched at Google, or just go to: https://dev.to/erickvasm/como-personalizar-neovim-3gg8. It explains these steps quite good.
 
 * To compare files meld program could be use. This program allows you to compare files and folders. To install it: $sudo apt-get install meld
+
+* (https://pwndbg.re/stable/) To install some plugins to GDB and make it more confortable to use we can install pwndbg. This plugin has a Git repository, and we can clone it and download it (https://github.com/pwndbg/pwndbg). The installation instructions are:
+	- git clone https://github.com/pwndbg/pwndbg
+	- cd pwndbg
+	- ./setup.sh
+With these instructions we are cloning the repository and "installing" it. (Install some needed packages - python. Creating a python profile and setting the python file with the changes as the plugin to be loaded).
